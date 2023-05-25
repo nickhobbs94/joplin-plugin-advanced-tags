@@ -1,39 +1,32 @@
 import joplin from 'api';
+import { SettingItemType } from 'api/types';
+import { PARENT_TAG_RELATION_SETTING, getTagParentRelationships } from './setParentTags';
+import { DataApi } from './dataApi';
 
-const tagParents = {
-	'number-theory': 'maths'
-};
-
-type TagInfo = {
-	id: string,
-	name: string,
-	parentName: string,
-	parentId: string,
-}
-
-async function updateTags(tag: TagInfo) {
-	const notes = await joplin.data.get(['tags', tag.id, 'notes'], { fields: ['id'] });
-	for (let note of notes.items) {
-		console.log(`updating ${tag} for ${note}`);
-		joplin.data.post(['tags', tag.parentId, 'notes'], null, {id: note.id});
-	}
-}
+export const RENAME_TAG_RELATION_SETTING: string = 'joplin-rename-tag-relation';
 
 joplin.plugins.register({
 	onStart: async function() {
-		console.info('Hello world. Test plugin started!');
-
-		// This event will be triggered when the user selects a different note
-		await joplin.workspace.onNoteSelectionChange(() => {
-			console.info('onNoteSelectionChange');
+		await joplin.settings.registerSection('tagRuleSection', {
+			label: 'Tag Rule Settings',
+			iconName: 'fas fa-tag',
 		});
 
-		// This event will be triggered when the content of the note changes
-		// as you also want to update the TOC in this case.
-		await joplin.workspace.onNoteChange(async () => {
-			console.info('onNoteChange');
-			let note = await joplin.workspace.selectedNote();
-			console.log(note);
+		await joplin.settings.registerSettings({
+			[PARENT_TAG_RELATION_SETTING]: {
+				value: PARENT_TAG_RELATION_SETTING,
+				type: SettingItemType.String,
+				section: 'tagRuleSection',
+				public: true,
+				label: 'Common tag for all notes specifying parent tags',
+			},
+			[RENAME_TAG_RELATION_SETTING]: {
+				value: RENAME_TAG_RELATION_SETTING,
+				type: SettingItemType.String,
+				section: 'tagRuleSection',
+				public: true,
+				label: 'Common tag for all notes specifying rename tags',
+			},
 		});
 
 		await joplin.commands.register({
@@ -41,31 +34,29 @@ joplin.plugins.register({
 			label: 'Tag menu item from plugin',
 			execute: async () => {
 				console.info('UPDATING TAGS');
-				const allTags = await joplin.data.get(['tags']);
-				for (let tagName of Object.keys(tagParents)) {
-					let tag = allTags.items.find(t => t.title === tagName);
-					if (!tag) {
-						console.warn(`Unable to find tag ${tagName}`);
+				const dataApi = await DataApi.builder();
+
+				const tagParents = await getTagParentRelationships(dataApi);
+
+				console.log(`tagParents.length ${tagParents.length}`);
+
+				for (let relation of tagParents) {
+					const child = dataApi.getTagByName(relation.childTagName);
+					const parent = dataApi.getTagByName(relation.parentTagName);
+
+					if (!child) {
+						console.warn(`Unable to find tag ${relation.childTagName}`);
 						continue;
 					}
 
-					let parentTag = allTags.items.find(t => t.title === tagParents[tagName]);
-					if (!parentTag) {
-						console.warn(`Unable to find tag ${tagParents[tagName]}`);
+					if (!parent) {
+						console.warn(`Unable to find tag ${relation.parentTagName}`);
 						continue;
 					}
 
-					await updateTags({
-						id: tag.id,
-						name: tagName,
-						parentId: parentTag.id,
-						parentName: tagParents[tagName],
-					});
+					await dataApi.addParentTags({id: child.id, parentId: parent.id});
 				}
 			},
 		});
-
-		// Also update the TOC when the plugin starts
-		console.info('when the plugin starts');
 	},
 });
