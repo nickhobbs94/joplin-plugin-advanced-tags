@@ -6,8 +6,8 @@
 	"name": "Advanced Tagging for Joplin",
 	"description": "Allow tags to be subsets of other tags",
 	"author": "Nicholas Hobbs",
-	"homepage_url": "",
-	"repository_url": "",
+	"homepage_url": "https://github.com/nickhobbs94/joplin-plugin-advanced-tags",
+	"repository_url": "https://github.com/nickhobbs94/joplin-plugin-advanced-tags",
 	"keywords": [],
 	"categories": []
 }
