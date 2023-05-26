@@ -34,6 +34,10 @@ export class DataApi {
         return await DataApi.getAll(['notes', note.id, 'tags'], { fields: ['id', 'title'] });
     }
 
+    public async createTag(title: string): Promise<Tag> {
+        return await joplin.data.post(['tags'], null, {title});
+    }
+
     private static async setNoteTag(noteId: string, tagId: string): Promise<void> {
         await joplin.data.post(['tags', tagId, 'notes'], null, {id: noteId});
     }

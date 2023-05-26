@@ -42,7 +42,7 @@ joplin.plugins.register({
 
 				for (let relation of tagParents) {
 					const child = dataApi.getTagByName(relation.childTagName);
-					const parent = dataApi.getTagByName(relation.parentTagName);
+					let parent = dataApi.getTagByName(relation.parentTagName);
 
 					if (!child) {
 						console.warn(`Unable to find tag ${relation.childTagName}`);
@@ -50,8 +50,8 @@ joplin.plugins.register({
 					}
 
 					if (!parent) {
-						console.warn(`Unable to find tag ${relation.parentTagName}`);
-						continue;
+						console.warn(`Creating new tag ${relation.parentTagName}`);
+						parent = await dataApi.createTag(relation.parentTagName);
 					}
 
 					await dataApi.addParentTags({id: child.id, parentId: parent.id});
