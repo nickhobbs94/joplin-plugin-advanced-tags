@@ -1,24 +1,32 @@
-# Joplin Plugin
+# Advanced Tags
 
-This is a template to create a new Joplin plugin.
+Write rules to update your tags within your Joplin notebooks.
 
-The main two files you will want to look at are:
+This plugin lets you run a command to add a tag to every note with a given tag.
 
-- `/src/index.ts`, which contains the entry point for the plugin source code.
-- `/src/manifest.json`, which is the plugin manifest. It contains information such as the plugin a name, version, etc.
+For example, I have a few notes in my Notebook about number theory and topology.
 
-## Building the plugin
+Notebook contents:
+- Prime numbers `#primes` `#number-theory`
+- Natural number `#number-theory`
+- Torus `#topology`
 
-The plugin is built using Webpack, which creates the compiled code in `/dist`. A JPL archive will also be created at the root, which can use to distribute the plugin.
+As you can see, I've tagged these notes with relevant tags.
 
-To build the plugin, simply run `npm run dist`.
+I now realise, that I often find myself wanting to look at notes tagged either `#number-theory` or `#topology`.
+It'd be really handy if I had tagged them all `#mathematics`. Now I could use the search feature and add the tag,
+but I want to ensure that any future notes also get `#mathematics` added to them.
 
-The project is setup to use TypeScript, although you can change the configuration to use plain JavaScript.
+Using this plugin I can make a new rule to specify this relationship. If I make a note tagged `#joplin-parent-tag-relation` (the specific tag is configurable) and populate it with the following JSON contents:
 
-## Updating the plugin framework
+```
+{
+  "number-theory": "mathematics",
+  "topology": "mathematics"
+}
+```
 
-To update the plugin framework, run `npm run update`.
+We can then add the mathematics tag to any `#number-theory` or `#topology` tagged notes just by running `:updateTags` in the CMD + P menu.
 
-In general this command tries to do the right thing - in particular it's going to merge the changes in package.json and .gitignore instead of overwriting. It will also leave "/src" as well as README.md untouched.
-
-The file that may cause problem is "webpack.config.js" because it's going to be overwritten. For that reason, if you want to change it, consider creating a separate JavaScript file and include it in webpack.config.js. That way, when you update, you only have to restore the line that include your file.
+## Future
+I'm planning on adding automatic tag renames here too. For example making sure that if I add a tag named `#maths` it automatically renames to `#mathematics`.
