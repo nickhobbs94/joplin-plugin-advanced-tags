@@ -31,7 +31,7 @@ joplin.plugins.register({
 
 		await joplin.commands.register({
 			name: 'updateTags',
-			label: 'Tag menu item from plugin',
+			label: 'Update tags based on user defined rules',
 			execute: async () => {
 				console.info('UPDATING TAGS');
 				const dataApi = await DataApi.builder();
