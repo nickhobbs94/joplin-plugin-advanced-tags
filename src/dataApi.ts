@@ -22,6 +22,10 @@ export class DataApi {
         }
     }
 
+    public async deleteTag(tag: Tag) {
+        await joplin.data.delete(['tags', tag.id]);
+    }
+
     /*
     Apparently there are no guarantees that tag names are unique.
     We might have multiple tags called `number-theory`. We should add `mathematics` to them all.

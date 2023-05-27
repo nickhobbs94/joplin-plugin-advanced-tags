@@ -2,8 +2,7 @@ import joplin from 'api';
 import { SettingItemType } from 'api/types';
 import { PARENT_TAG_RELATION_SETTING, addParentTagsToChildren, getTagParentRelationships } from './setParentTags';
 import { DataApi } from './dataApi';
-
-export const RENAME_TAG_RELATION_SETTING: string = 'joplin-rename-tag-relation';
+import { deduplicateTags } from './deduplicateTags';
 
 joplin.plugins.register({
 	onStart: async function() {
@@ -20,13 +19,6 @@ joplin.plugins.register({
 				public: true,
 				label: 'Common tag for all notes specifying parent tags',
 			},
-			[RENAME_TAG_RELATION_SETTING]: {
-				value: RENAME_TAG_RELATION_SETTING,
-				type: SettingItemType.String,
-				section: 'tagRuleSection',
-				public: true,
-				label: 'Common tag for all notes specifying rename tags',
-			},
 		});
 
 		await joplin.commands.register({
@@ -41,6 +33,16 @@ joplin.plugins.register({
 				console.log(`tagParents.length ${tagParents.length}`);
 
 				await addParentTagsToChildren(dataApi, tagParents);
+			},
+		});
+
+		await joplin.commands.register({
+			name: 'deleteDuplicateTags',
+			label: 'Delete duplicate tags',
+			execute: async () => {
+				console.info('DELETING DUPLICATE TAGS');
+				const dataApi = await DataApi.builder();
+				await deduplicateTags(dataApi);
 			},
 		});
 	},

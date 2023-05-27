@@ -1,6 +1,6 @@
 # Advanced Tags
 
-Write rules to update your tags within your Joplin notebooks.
+Write rules to update your tags within your Joplin notebooks. Warning: this plugin is experimental. Use at your own risk.
 
 This plugin lets you run a command to add a tag to every note with a given tag.
 
@@ -27,6 +27,11 @@ Using this plugin I can make a new rule to specify this relationship. If I make 
 ```
 
 We can then add the mathematics tag to any `#number-theory` or `#topology` tagged notes just by running `:updateTags` in the CMD + P menu.
+
+## Deduplicate tags
+
+One problem with my notebook was that behind the scenes there were actually two tags named `#number-theory`.
+I've added a command to delete the duplicate tags. This is likely highly risky. Please make a backup before running this.
 
 ## Future
 I'm planning on adding automatic tag renames here too. For example making sure that if I add a tag named `#maths` it automatically renames to `#mathematics`.
