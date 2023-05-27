@@ -1,6 +1,6 @@
 import joplin from 'api';
 import { SettingItemType } from 'api/types';
-import { PARENT_TAG_RELATION_SETTING, getTagParentRelationships } from './setParentTags';
+import { PARENT_TAG_RELATION_SETTING, addParentTagsToChildren, getTagParentRelationships } from './setParentTags';
 import { DataApi } from './dataApi';
 
 export const RENAME_TAG_RELATION_SETTING: string = 'joplin-rename-tag-relation';
@@ -40,22 +40,7 @@ joplin.plugins.register({
 
 				console.log(`tagParents.length ${tagParents.length}`);
 
-				for (let relation of tagParents) {
-					const child = dataApi.getTagByName(relation.childTagName);
-					let parent = dataApi.getTagByName(relation.parentTagName);
-
-					if (!child) {
-						console.warn(`Unable to find tag ${relation.childTagName}`);
-						continue;
-					}
-
-					if (!parent) {
-						console.warn(`Creating new tag ${relation.parentTagName}`);
-						parent = await dataApi.createTag(relation.parentTagName);
-					}
-
-					await dataApi.addParentTags({id: child.id, parentId: parent.id});
-				}
+				await addParentTagsToChildren(dataApi, tagParents);
 			},
 		});
 	},

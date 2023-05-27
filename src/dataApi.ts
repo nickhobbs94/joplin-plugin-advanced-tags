@@ -1,8 +1,8 @@
 import joplin from 'api';
 import { Path } from 'api/types';
 
-type Tag = {id: string, title: string};
-type Note = {id: string, title: string, body: string};
+export type Tag = {id: string, title: string};
+export type Note = {id: string, title: string, body: string};
 
 export class DataApi {
 
@@ -13,17 +13,21 @@ export class DataApi {
         return new DataApi(allTags);
     }
 
-    public async addParentTags(tagRelation: {id: string, parentId: string}) {
-        const notes: {id: string}[] = await DataApi.getAll(['tags', tagRelation.id, 'notes'], { fields: ['id'] });
+    public async addParentTags(child: Tag, parent: Tag) {
+        const notes: {id: string}[] = await DataApi.getAll(['tags', child.id, 'notes'], { fields: ['id'] });
 
         for (let note of notes) {
-            console.log(`adding tag id ${tagRelation.parentId} to note ${note.id}`);
-            await DataApi.setNoteTag(note.id, tagRelation.parentId);
+            console.log(`adding tag ${parent.title} with id ${parent.id} to note ${note.id}`);
+            await DataApi.setNoteTag(note.id, parent.id);
         }
     }
 
-    public getTagByName(tagName: string) {
-        return this.allTags.find(tag => tag.title === tagName);
+    /*
+    Apparently there are no guarantees that tag names are unique.
+    We might have multiple tags called `number-theory`. We should add `mathematics` to them all.
+    */
+    public getTagsByName(tagName: string): Tag[] {
+        return this.allTags.filter(tag => tag.title === tagName);
     }
 
     public async getNotesWithTag(tagId: string): Promise<Note[]> {
