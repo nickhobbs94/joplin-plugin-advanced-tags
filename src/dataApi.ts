@@ -17,7 +17,7 @@ export class DataApi {
         const notes: {id: string}[] = await DataApi.getAll(['tags', tagRelation.id, 'notes'], { fields: ['id'] });
 
         for (let note of notes) {
-            console.log(`updating ${tagRelation} for note ${note.id}`);
+            console.log(`adding tag id ${tagRelation.parentId} to note ${note.id}`);
             await DataApi.setNoteTag(note.id, tagRelation.parentId);
         }
     }
