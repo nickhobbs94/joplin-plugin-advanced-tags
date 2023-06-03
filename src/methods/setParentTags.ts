@@ -1,5 +1,6 @@
-import { DataApi, Note } from "./dataApi";
+import { DataApi } from "../data/dataApi";
 import joplin from 'api';
+import { Note } from "../data/note";
 
 export const PARENT_TAG_RELATION_SETTING: string = 'joplin-parent-tag-relation';
 

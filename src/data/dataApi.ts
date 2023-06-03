@@ -1,12 +1,16 @@
 import joplin from 'api';
 import { Path } from 'api/types';
-
-export type Tag = {id: string, title: string};
-export type Note = {id: string, title: string, body: string};
+import { Tag, TagAPI } from './tag';
+import { Note, NoteAPI } from './note';
+import { NotebookAPI } from './notebook';
 
 export class DataApi {
 
-    constructor(public allTags: Tag[]) {}
+    public tag = new TagAPI(this);
+    public note = new NoteAPI(this);
+    public notebook = new NotebookAPI(this);
+
+    constructor(public allTags: Tag[]) { }
 
     public static async builder(): Promise<DataApi> {
         const allTags = await DataApi.getAll(['tags'], {fields: ['id', 'title']});
@@ -20,10 +24,6 @@ export class DataApi {
             console.log(`adding tag ${parent.title} with id ${parent.id} to note ${note.id}`);
             await DataApi.setNoteTag(note.id, parent.id);
         }
-    }
-
-    public async deleteTag(tag: Tag) {
-        await joplin.data.delete(['tags', tag.id]);
     }
 
     /*
@@ -46,11 +46,15 @@ export class DataApi {
         return await joplin.data.post(['tags'], null, {title});
     }
 
+    public async getTaggedNotesUnderFolder(tag: string, notebook: string): Promise<Note[]> {
+        return await DataApi.getAll(['search'], {query: `tag:"${tag}" -notebook:"${notebook}"`, type: 'note'});
+    }
+
     private static async setNoteTag(noteId: string, tagId: string): Promise<void> {
         await joplin.data.post(['tags', tagId, 'notes'], null, {id: noteId});
     }
 
-    private static async getAll(path: Path, options: any): Promise<any[]> {
+    public static async getAll(path: Path, options: any): Promise<any[]> {
         let results: any = [];
         let hasMore = true;
         let page = 1;

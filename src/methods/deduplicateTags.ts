@@ -1,4 +1,5 @@
-import { DataApi, Tag } from "./dataApi";
+import { DataApi } from "../data/dataApi";
+import { Tag } from "../data/tag";
 
 function dupes(tags: Tag[]) {
     // Create an object with `name` keys and arrays of objects as values
@@ -31,7 +32,7 @@ export async function deduplicateTags(dataApi: DataApi) {
 
         for (let oldTag of tags) {
             await dataApi.addParentTags(oldTag, newTag);
-            await dataApi.deleteTag(oldTag);
+            await dataApi.tag.delete(oldTag);
         }
     }
 }
