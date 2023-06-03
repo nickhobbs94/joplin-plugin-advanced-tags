@@ -2,7 +2,7 @@
 
 Write rules to update your tags/notes within your Joplin notebooks. Warning: this plugin is experimental. Use at your own risk.
 
-Rules are writen as notes anywhere in your Joplin instance. You just have to tag them with a specific tag so that they can be found and applied. All notes must be valid JSON to work.
+Rules are writen as notes anywhere in your Joplin instance. You just have to tag them with a specific tag so that they can be found and applied. All rules must be valid JSON to work.
 
 Below are some of the things you can do with this plugin.
 
